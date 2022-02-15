@@ -7,6 +7,7 @@ public class PresetStarter
 {
     private List<string> pathes = new List<string>();
     private Dictionary<string, int> procId = new Dictionary<string, int>();
+    private List<Process> runningProcesses = new List<Process>();
 
     public void AddPath(string path)
     {
@@ -46,31 +47,10 @@ public class PresetStarter
 
             if(!procId.ContainsKey(name))
             {
-                procId.Add(name, Process.Start(pathes[i]).Id);
+                Process currProc = Process.Start(pathes[i]);
+                runningProcesses.Add(currProc);
+                procId.Add(name, currProc.Id);
             }
-            
-
-            //bool run = true;
-
-            //foreach(Process proc in Process.GetProcesses())
-            //{
-            //    if (procId.ContainsValue(proc.Id)) // if we runned process with this Id
-            //    {
-                    //procId.Add(name, Process.Start(pathes[i]).Id);
-            //        run = false;
-                    //break;
-            //    }
-            //}
-
-            //if (run)
-            //{
-                //Process.Start(pathes[i]);
-            //    procId.Add(name, Process.Start(pathes[i]).Id);
-            //}
-
-            //if (Process.GetProcessesByName(name).Length == 0)
-            //    Process.Start(pathes[i]);
-            
         }
     }
 
@@ -101,32 +81,17 @@ public class PresetStarter
 
     public void CloseAllProcess()
     {
-        for(int i=0; i < pathes.Count; i++)
+        foreach (Process proc in runningProcesses)
         {
-            string[] tmp = pathes[i].Split('\\');
-            string name = tmp[tmp.Length - 1];
-
-            foreach (Process proc in Process.GetProcesses())
+            if (!proc.HasExited)
             {
-                if (procId.ContainsValue(proc.Id))
-                {
-                    //proc.Kill();
-                    proc.CloseMainWindow();
-                    proc.WaitForExit();
-                    if (!proc.HasExited)
-                        proc.Kill();
-                    procId.Remove(name);
-                }
+                //proc.Close();
+                proc.Kill();
+                    
             }
-
-            //if (Process.GetProcessesByName(name).Length != 0)
-            //{
-            //    foreach (Process proc in Process.GetProcessesByName(name))
-            //    {
-            //        proc.Kill();
-            //    }
-            //}
         }
+        runningProcesses.Clear();
+        procId.Clear();
     }
 }
 
