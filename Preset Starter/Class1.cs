@@ -83,12 +83,8 @@ public class PresetStarter
     {
         foreach (Process proc in runningProcesses)
         {
-            if (!proc.HasExited)
-            {
-                //proc.Close();
-                proc.Kill();
-                    
-            }
+            proc.CloseMainWindow();
+            proc.WaitForExit();       
         }
         runningProcesses.Clear();
         procId.Clear();
